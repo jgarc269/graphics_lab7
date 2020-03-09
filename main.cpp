@@ -21,21 +21,62 @@ using namespace std;
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;
 
+std::vector<vec2> control_points;
+
+float factorial(int n)
+{
+    if(n == 0 || n == 1)
+	return 1;
+    else
+	return n * factorial(n-1);
+}
+
+float combination(int n, int k)
+{
+    return factorial(n) / (factorial(k) * factorial(n-k));
+}
+
+float binomial(int n, int k, float t)
+{
+    if(k == 0 || k == n)
+	return 1;
+
+	return combination(n - 1, k) * pow(t , k) * pow(1 - t, n - 1 - k);
+}
+
 
 void GL_render()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glutSwapBuffers();
 
-    glBegin(GL_LINES);
+    glBegin(GL_LINE_STRIP);
     glColor3f(1.0f,0.0f,0.0f);
-    // just for example, remove if desired
+
+    if(control_points.size() >= 2)
+    {
+	for(double i = 0.01; i <= 1.0; i = i + 0.01)
+	{
+	    vec2 graph;
+	    for(unsigned int j = 0; i < control_points.size(); j++)
+	    {
+		graph = graph + binomial(control_points.size(), j, j) * control_points[j];
+	    }
+		glVertex2f(graph[0], graph[1]);
+	}
+    }
+ 
+/*
+   // just for example, remove if desired
     glVertex2f(-.5f,-.5f);
     glVertex2f(.5f,-.5f);
     glVertex2f(.5f,.5f);
     glVertex2f(-.5f,.5f);
+*/
+
     glEnd();
     glFlush();
+
 }
 
 void GL_mouse(int button,int state,int x,int y)
@@ -52,6 +93,14 @@ void GL_mouse(int button,int state,int x,int y)
         double px,py,dummy_z; // we don't care about the z-value but need something to pass in
         gluUnProject(x,y,0,mv_mat,proj_mat,vp_mat,&px,&py,&dummy_z);
         glutPostRedisplay();
+
+	//control_points.push_back({px, py});
+	vec2 temp;
+	temp[0] = px;
+	temp[1] = py;
+	
+	control_points.push_back(temp);
+	glutPostRedisplay();
     }
 }
 
