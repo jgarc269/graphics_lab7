@@ -1,4 +1,4 @@
-// Name:
+// Name: Jesse Garcia
 // Quarter, Year:
 // Lab:
 //
@@ -21,7 +21,8 @@ using namespace std;
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;
 
-std::vector<vec2> control_points;
+std::vector<float> control_points_x;
+std::vector<float> control_points_y;
 
 float factorial(int n)
 {
@@ -38,8 +39,6 @@ float combination(int n, int k)
 
 float binomial(int n, int k, float t)
 {
-    if(k == 0 || k == n)
-	return 1;
 
 	return combination(n - 1, k) * pow(t , k) * pow(1 - t, n - 1 - k);
 }
@@ -53,27 +52,14 @@ void GL_render()
     glBegin(GL_LINE_STRIP);
     glColor3f(1.0f,0.0f,0.0f);
 
-    if(control_points.size() >= 2)
+    if(control_points_x.size())
     {
-	for(double i = 0.01; i <= 1.0; i = i + 0.01)
+	for(float i = 0.01; i <= 1.0; i = i + 0.01)
 	{
-	    vec2 graph;
-	    for(unsigned int j = 0; i < control_points.size(); j++)
-	    {
-		graph = graph + binomial(control_points.size(), j, j) * control_points[j];
-	    }
-		glVertex2f(graph[0], graph[1]);
+	    glVertex2f(binomial(control_points_x.size(), 0, i), binomial(control_points_x.size(), 1, i));
 	}
     }
  
-/*
-   // just for example, remove if desired
-    glVertex2f(-.5f,-.5f);
-    glVertex2f(.5f,-.5f);
-    glVertex2f(.5f,.5f);
-    glVertex2f(-.5f,.5f);
-*/
-
     glEnd();
     glFlush();
 
@@ -94,13 +80,9 @@ void GL_mouse(int button,int state,int x,int y)
         gluUnProject(x,y,0,mv_mat,proj_mat,vp_mat,&px,&py,&dummy_z);
         glutPostRedisplay();
 
-	//control_points.push_back({px, py});
-	vec2 temp;
-	temp[0] = px;
-	temp[1] = py;
+	control_points_x.push_back(px);
+	control_points_x.push_back(py);
 	
-	control_points.push_back(temp);
-	glutPostRedisplay();
     }
 }
 
